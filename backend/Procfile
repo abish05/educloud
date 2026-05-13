@@ -1,0 +1,1 @@
+web: java -Djava.security.egd=file:/dev/./urandom -Xmx300m -jar /app/target/backend-0.0.1-SNAPSHOT.jar --server.port=${PORT}
