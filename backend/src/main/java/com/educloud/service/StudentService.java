@@ -43,6 +43,27 @@ public class StudentService {
         studentRepository.deleteById(id);
     }
 
+    public StudentDto updateStudent(Long id, StudentDto studentDto) {
+        Student existingStudent = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+        
+        existingStudent.setName(studentDto.getName());
+        existingStudent.setEmail(studentDto.getEmail());
+        existingStudent.setPhone(studentDto.getPhone());
+        existingStudent.setYear(studentDto.getYear());
+        existingStudent.setGender(studentDto.getGender());
+        existingStudent.setDateOfBirth(studentDto.getDateOfBirth());
+        existingStudent.setAddress(studentDto.getAddress());
+        
+        if (studentDto.getDepartmentId() != null) {
+            Department dept = departmentRepository.findById(studentDto.getDepartmentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
+            existingStudent.setDepartment(dept);
+        }
+        
+        return mapToDto(studentRepository.save(existingStudent));
+    }
+
     private StudentDto mapToDto(Student student) {
         StudentDto dto = new StudentDto();
         dto.setId(student.getId());
