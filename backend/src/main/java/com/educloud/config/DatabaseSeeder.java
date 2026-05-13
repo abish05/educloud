@@ -27,40 +27,47 @@ public class DatabaseSeeder implements CommandLineRunner {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) throws Exception {
-        // Seed Admin
-        if (!userRepository.existsByEmail("admin@educloud.com")) {
-            User admin = new User();
-            admin.setName("System Admin");
-            admin.setEmail("admin@educloud.com");
-            admin.setPassword(passwordEncoder.encode("Admin123"));
-            admin.setRole("ROLE_ADMIN");
-            userRepository.save(admin);
-        }
+    public void run(String... args) {
+        try {
+            // Seed Admin
+            if (!userRepository.existsByEmail("admin@educloud.com")) {
+                User admin = new User();
+                admin.setName("System Admin");
+                admin.setEmail("admin@educloud.com");
+                admin.setPassword(passwordEncoder.encode("Admin123"));
+                admin.setRole("ROLE_ADMIN");
+                admin.setActive(true);
+                userRepository.save(admin);
+            }
 
-        // Seed Faculty
-        if (!userRepository.existsByEmail("faculty@educloud.com")) {
-            User faculty = new User();
-            faculty.setName("Faculty Member");
-            faculty.setEmail("faculty@educloud.com");
-            faculty.setPassword(passwordEncoder.encode("Faculty123"));
-            faculty.setRole("ROLE_FACULTY");
-            userRepository.save(faculty);
-        }
+            // Seed Faculty
+            if (!userRepository.existsByEmail("faculty@educloud.com")) {
+                User faculty = new User();
+                faculty.setName("Faculty Member");
+                faculty.setEmail("faculty@educloud.com");
+                faculty.setPassword(passwordEncoder.encode("Faculty123"));
+                faculty.setRole("ROLE_FACULTY");
+                faculty.setActive(true);
+                userRepository.save(faculty);
+            }
 
-        // Seed Departments and Subjects if empty
-        if (departmentRepository.count() == 0) {
-            Department cse = new Department();
-            cse.setName("Computer Science and Engineering");
-            cse.setCode("CSE");
-            cse = departmentRepository.save(cse);
+            // Seed Departments and Subjects if empty
+            if (departmentRepository.count() == 0) {
+                Department cse = new Department();
+                cse.setName("Computer Science and Engineering");
+                cse.setCode("CSE");
+                cse = departmentRepository.save(cse);
 
-            Subject dsa = new Subject();
-            dsa.setName("Data Structures");
-            dsa.setCode("CS301");
-            dsa.setDepartment(cse);
-            dsa.setSemester(3);
-            subjectRepository.save(dsa);
+                Subject dsa = new Subject();
+                dsa.setName("Data Structures");
+                dsa.setCode("CS301");
+                dsa.setDepartment(cse);
+                dsa.setSemester(3);
+                subjectRepository.save(dsa);
+            }
+        } catch (Exception e) {
+            System.err.println("Database seeding failed: " + e.getMessage());
+            // Don't rethrow, let the app start even if seeding fails once
         }
     }
 }
