@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'https://educloudbackend.abish.in/api';
 
 async function apiCall(endpoint, method = 'GET', data = null) {
     const token = localStorage.getItem('token');

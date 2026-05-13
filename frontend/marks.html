@@ -117,6 +117,8 @@
 <script src="js/db.js"></script>
 <script>
     if (!localStorage.getItem('token')) window.location.href = 'login.html';
+    const API_BASE = 'https://educloudbackend.abish.in/api';
+    const token = localStorage.getItem('token');
     document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('token'); window.location.href = 'login.html'; };
 
     function showTab(tab, el) {
