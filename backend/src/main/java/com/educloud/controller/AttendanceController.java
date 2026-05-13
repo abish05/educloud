@@ -7,12 +7,15 @@ import com.educloud.entity.Subject;
 import com.educloud.repository.AttendanceRepository;
 import com.educloud.repository.StudentRepository;
 import com.educloud.repository.SubjectRepository;
+import com.educloud.service.ActivityLogService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/attendance")
@@ -73,7 +76,7 @@ public class AttendanceController {
                     d.setDate(a.getDate());
                     d.setStatus(a.getStatus());
                     return d;
-                }).collect(java.util.stream.Collectors.toList()));
+                }).collect(Collectors.toList()));
     }
 
     @GetMapping("/student/{studentId}")

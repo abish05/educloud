@@ -7,11 +7,14 @@ import com.educloud.entity.Subject;
 import com.educloud.repository.MarksRepository;
 import com.educloud.repository.StudentRepository;
 import com.educloud.repository.SubjectRepository;
+import com.educloud.service.ActivityLogService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/marks")
@@ -35,7 +38,9 @@ public class MarksController {
         Student student = studentRepository.findById(dto.getStudentId()).orElseThrow();
         Subject subject = subjectRepository.findById(dto.getSubjectId()).orElseThrow();
         
-        Marks marks = new Marks();
+        Marks marks = marksRepository.findByStudentIdAndSubjectIdAndSemester(dto.getStudentId(), dto.getSubjectId(), dto.getSemester())
+                .orElse(new Marks());
+        
         marks.setStudent(student);
         marks.setSubject(subject);
         marks.setSemester(dto.getSemester());
@@ -64,7 +69,7 @@ public class MarksController {
                     d.setSemesterMarks(m.getSemesterMarks());
                     d.setGpa(m.getGpa());
                     return d;
-                }).collect(java.util.stream.Collectors.toList()));
+                }).collect(Collectors.toList()));
     }
 
     @GetMapping("/student/{studentId}")

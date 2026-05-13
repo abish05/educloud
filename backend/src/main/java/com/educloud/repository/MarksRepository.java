@@ -10,4 +10,5 @@ import java.util.List;
 public interface MarksRepository extends JpaRepository<Marks, Long> {
     List<Marks> findByStudentId(Long studentId);
     List<Marks> findAllByOrderByIdDesc();
+    java.util.Optional<Marks> findByStudentIdAndSubjectIdAndSemester(Long studentId, Long subjectId, Integer semester);
 }

@@ -1,11 +1,17 @@
 package com.educloud.service;
 
 import com.educloud.dto.DashboardStatsDto;
+import com.educloud.dto.ActivityLogDto;
+import com.educloud.entity.User;
 import com.educloud.repository.MarksRepository;
 import com.educloud.repository.StudentRepository;
 import com.educloud.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardService {
@@ -37,9 +43,9 @@ public class DashboardService {
                 .average().orElse(0.0);
 
         // Department distribution
-        java.util.Map<String, Long> deptDist = studentRepository.findAll().stream()
+        Map<String, Long> deptDist = studentRepository.findAll().stream()
                 .filter(s -> s.getDepartment() != null)
-                .collect(java.util.stream.Collectors.groupingBy(s -> s.getDepartment().getCode(), java.util.stream.Collectors.counting()));
+                .collect(Collectors.groupingBy(s -> s.getDepartment().getCode(), Collectors.counting()));
 
         return new DashboardStatsDto(
             totalStudents, 
