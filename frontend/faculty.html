@@ -3,136 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Management - EduCloud</title>
+    <title>Faculty – EduCloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
     <style>
-        .table-container { margin-top: 2rem; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--glass-border); }
-        th { color: var(--text-light); font-weight: 600; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
-        .modal-content { background-color: var(--bg); margin: 5% auto; padding: 2rem; border-radius: 16px; width: 450px; box-shadow: var(--glass-shadow); }
+        .faculty-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; margin-top:1.5rem; }
+        .faculty-card { padding:1.5rem; border-radius:16px; position:relative; }
+        .faculty-avatar { width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:white; font-weight:700; margin-bottom:1rem; }
+        .faculty-card h4 { margin-bottom:0.3rem; }
+        .faculty-card p { color:var(--text-light); font-size:0.85rem; }
+        .modal { display:none; position:fixed; z-index:1000; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); }
+        .modal-content { background:var(--bg); margin:5% auto; padding:2.5rem; border-radius:20px; width:90%; max-width:500px; border:1px solid var(--glass-border); }
+        .form-group label { display:block; margin-bottom:0.4rem; font-weight:500; font-size:0.9rem; }
+        .form-group input, .form-group select { width:100%; padding:0.7rem 1rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--card-bg); color:var(--text); margin-bottom:1rem; }
     </style>
 </head>
 <body>
-    <div class="dashboard-layout">
-        <aside class="sidebar glass">
-            <h2 class="logo">EduCloud</h2>
-            <nav class="sidebar-nav">
-                <a href="admin-dashboard.html" class="nav-item">Dashboard</a>
-                <a href="students.html" class="nav-item">Students</a>
-                <a href="faculty.html" class="nav-item active">Faculty</a>
-                <a href="#" class="nav-item">Attendance</a>
-                <a href="#" class="nav-item">Marks</a>
-                <a href="#" class="nav-item">Settings</a>
-            </nav>
-        </aside>
-
-        <main class="main-content">
-            <div class="topbar">
-                <h2>Faculty Management</h2>
-                <div class="user-profile">
-                    <button id="addFacultyBtn" class="btn btn-primary">Add Faculty Member</button>
-                    <a href="#" id="logoutBtn" class="btn" style="margin-left: 1rem;">Logout</a>
-                </div>
+<div class="dashboard-layout">
+    <aside class="sidebar glass">
+        <h2 class="logo">🎓 EduCloud</h2>
+        <nav class="sidebar-nav">
+            <a href="admin-dashboard.html" class="nav-item">📊 Dashboard</a>
+            <a href="students.html" class="nav-item">👨‍🎓 Students</a>
+            <a href="faculty.html" class="nav-item active">👩‍🏫 Faculty</a>
+            <a href="attendance.html" class="nav-item">📋 Attendance</a>
+            <a href="marks.html" class="nav-item">📝 Marks</a>
+            <a href="settings.html" class="nav-item">⚙️ Settings</a>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <div class="topbar">
+            <h2>👩‍🏫 Faculty Management</h2>
+            <div style="display:flex;gap:1rem;align-items:center;">
+                <button id="addFacultyBtn" class="btn btn-primary">+ Add Faculty</button>
+                <button id="logoutBtn" class="btn">Logout</button>
             </div>
-
-            <div class="table-container glass" style="padding: 1.5rem; border-radius: 16px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="facultyList">
-                        <!-- Loaded via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </main>
-    </div>
-
-    <div id="facultyModal" class="modal">
-        <div class="modal-content glass">
-            <h3>Add Faculty Member</h3>
-            <form id="facultyForm" style="margin-top: 1.5rem;">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="name" required>
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="email" required>
-                </div>
-                <div class="form-group">
-                    <label>Temporary Password</label>
-                    <input type="password" id="password" required>
-                </div>
-                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button type="submit" class="btn btn-primary w-100">Create Account</button>
-                    <button type="button" id="closeModal" class="btn w-100">Cancel</button>
-                </div>
-            </form>
         </div>
+
+        <div id="facultyGrid" class="faculty-grid">
+            <!-- Default faculty always shown -->
+            <div class="faculty-card glass">
+                <div class="faculty-avatar">FA</div>
+                <h4>Faculty Member</h4>
+                <p>faculty@educloud.com</p>
+                <p style="margin-top:0.3rem;font-size:0.8rem;color:#22c55e;">● Active · Default Account</p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="facultyModal" class="modal">
+    <div class="modal-content glass">
+        <h3 style="margin-bottom:1.5rem;">+ Add Faculty Member</h3>
+        <form id="facultyForm">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="f_name" required>
+            </div>
+            <div class="form-group">
+                <label>Email Address *</label>
+                <input type="email" id="f_email" required>
+            </div>
+            <div class="form-group">
+                <label>Department</label>
+                <select id="f_dept">
+                    <option value="">Select Department</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="f_phone">
+            </div>
+            <div class="form-group">
+                <label>Temporary Password *</label>
+                <input type="password" id="f_pass" value="Faculty123" required>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:1rem;">
+                <button type="submit" class="btn btn-primary w-100">💾 Create Account</button>
+                <button type="button" id="closeModal" class="btn w-100" style="background:rgba(100,116,139,0.2);">Cancel</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const facultyList = document.getElementById('facultyList');
-            const facultyModal = document.getElementById('facultyModal');
-            const addFacultyBtn = document.getElementById('addFacultyBtn');
-            const closeModal = document.getElementById('closeModal');
-            const facultyForm = document.getElementById('facultyForm');
+<script>
+    if (!localStorage.getItem('token')) window.location.href = 'login.html';
+    document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('token'); window.location.href = 'login.html'; };
 
-            async function loadFaculty() {
-                try {
-                    const faculty = await apiCall('/users/faculty');
-                    facultyList.innerHTML = '';
-                    faculty.forEach(f => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${f.name}</td>
-                            <td>${f.email}</td>
-                            <td><span class="status-pill active">Active</span></td>
-                            <td><button class="btn btn-danger btn-sm" onclick="deleteFaculty(${f.id})">Delete</button></td>
-                        `;
-                        facultyList.appendChild(tr);
-                    });
-                } catch (e) { console.error(e); }
+    const API_BASE = 'http://localhost:8080/api';
+    const token = localStorage.getItem('token');
+
+    let allFaculty = [];
+
+    async function loadInitialData() {
+        try {
+            // Load Departments
+            const dResp = await fetch(`${API_BASE}/departments`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const depts = await dResp.json();
+            const deptSel = document.getElementById('f_dept');
+            depts.forEach(d => deptSel.innerHTML += `<option value="${d.name}">${d.name}</option>`);
+
+            await loadFaculty();
+        } catch (err) {
+            console.error('Error loading initial data:', err);
+        }
+    }
+
+    async function loadFaculty() {
+        try {
+            const response = await fetch(`${API_BASE}/users/faculty`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = 'login.html';
+                return;
             }
+            allFaculty = await response.json();
+            renderFaculty();
+        } catch (err) {
+            console.error('Error loading faculty:', err);
+        }
+    }
 
-            facultyForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const data = {
-                    name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    password: document.getElementById('password').value
-                };
-                try {
-                    await apiCall('/users/faculty', 'POST', data);
-                    facultyModal.style.display = 'none';
-                    loadFaculty();
-                } catch (e) { alert('Failed to create faculty'); }
+    function renderFaculty() {
+        const grid = document.getElementById('facultyGrid');
+        grid.innerHTML = '';
+
+        // Add default card (UI constant)
+        const defaultCard = document.createElement('div');
+        defaultCard.className = 'faculty-card glass';
+        defaultCard.innerHTML = `
+            <div class="faculty-avatar">FA</div>
+            <h4>Faculty Member</h4>
+            <p>faculty@educloud.com</p>
+            <p style="margin-top:0.3rem;font-size:0.8rem;color:#22c55e;">● Active · Default Account</p>
+        `;
+        grid.appendChild(defaultCard);
+
+        allFaculty.forEach(f => {
+            const initials = f.name.split(' ').map(w=>w[0]).join('').toUpperCase().substring(0,2);
+            const div = document.createElement('div');
+            div.className = 'faculty-card glass';
+            div.innerHTML = `
+                <div class="faculty-avatar">${initials}</div>
+                <h4>${f.name}</h4>
+                <p>${f.email}</p>
+                <p style="margin-top:0.3rem;font-size:0.8rem;">Faculty Member</p>
+                <p style="font-size:0.8rem;color:#22c55e;margin-top:0.3rem;">● Active</p>
+                <button onclick="delFaculty(${f.id})" style="position:absolute;top:1rem;right:1rem;background:rgba(239,68,68,0.2);color:#ef4444;border:none;border-radius:6px;padding:0.3rem 0.6rem;cursor:pointer;">🗑️</button>
+            `;
+            grid.appendChild(div);
+        });
+    }
+
+    async function delFaculty(id) {
+        if (confirm('Remove this faculty member?')) {
+            try {
+                const response = await fetch(`${API_BASE}/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    await loadFaculty();
+                }
+            } catch (err) {
+                console.error('Error deleting faculty:', err);
+            }
+        }
+    }
+
+    document.getElementById('addFacultyBtn').onclick = () => {
+        document.getElementById('facultyForm').reset();
+        document.getElementById('f_pass').value = 'Faculty123';
+        document.getElementById('facultyModal').style.display = 'block';
+    };
+
+    document.getElementById('facultyForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const faculty = {
+            name:       document.getElementById('f_name').value,
+            email:      document.getElementById('f_email').value,
+            password:   document.getElementById('f_pass').value,
+        };
+
+        try {
+            const response = await fetch(`${API_BASE}/users/faculty`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(faculty)
             });
 
-            addFacultyBtn.onclick = () => facultyModal.style.display = 'block';
-            closeModal.onclick = () => facultyModal.style.display = 'none';
-            
-            window.deleteFaculty = async (id) => {
-                if(confirm('Delete this faculty member?')) {
-                    await apiCall(`/users/${id}`, 'DELETE');
-                    loadFaculty();
-                }
-            };
+            if (response.ok) {
+                document.getElementById('facultyModal').style.display = 'none';
+                await loadFaculty();
+                alert('✅ Faculty account created!');
+            }
+        } catch (err) {
+            console.error('Error saving faculty:', err);
+        }
+    });
 
-            loadFaculty();
-        });
-    </script>
+    document.getElementById('closeModal').onclick = () => document.getElementById('facultyModal').style.display = 'none';
+    window.onclick = e => { if(e.target === document.getElementById('facultyModal')) document.getElementById('facultyModal').style.display = 'none'; };
+
+    loadInitialData();
+</script>
 </body>
 </html>

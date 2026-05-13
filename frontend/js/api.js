@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://educloud-production.up.railway.app/api';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 async function apiCall(endpoint, method = 'GET', data = null) {
     const token = localStorage.getItem('token');

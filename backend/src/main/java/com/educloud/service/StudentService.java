@@ -21,6 +21,9 @@ public class StudentService {
     @Autowired
     private DepartmentRepository departmentRepository;
 
+    @Autowired
+    private ActivityLogService activityLogService;
+
     public List<StudentDto> getAllStudents() {
         return studentRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
@@ -33,13 +36,15 @@ public class StudentService {
 
     public StudentDto addStudent(StudentDto studentDto) {
         Student student = mapToEntity(studentDto);
-        return mapToDto(studentRepository.save(student));
+        Student saved = studentRepository.save(student);
+        activityLogService.logActivity("Added new student: " + saved.getName());
+        return mapToDto(saved);
     }
 
     public void deleteStudent(Long id) {
-        if (!studentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Student not found");
-        }
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+        activityLogService.logActivity("Deleted student: " + student.getName());
         studentRepository.deleteById(id);
     }
 
@@ -61,7 +66,9 @@ public class StudentService {
             existingStudent.setDepartment(dept);
         }
         
-        return mapToDto(studentRepository.save(existingStudent));
+        Student saved = studentRepository.save(existingStudent);
+        activityLogService.logActivity("Updated student details: " + saved.getName());
+        return mapToDto(saved);
     }
 
     private StudentDto mapToDto(Student student) {

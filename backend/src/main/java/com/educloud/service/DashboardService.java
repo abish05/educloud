@@ -17,6 +17,9 @@ public class DashboardService {
     private UserRepository userRepository;
 
     @Autowired
+    private ActivityLogService activityLogService;
+
+    @Autowired
     private MarksRepository marksRepository;
 
     public DashboardStatsDto getDashboardStats() {
@@ -24,10 +27,27 @@ public class DashboardService {
         long totalFaculty = userRepository.findAll().stream()
                 .filter(u -> u.getRole() != null && u.getRole().equalsIgnoreCase("ROLE_FACULTY")).count();
         
-        // Better average calculation (placeholder for now, can be expanded with real data logic)
-        double avgAttendance = totalStudents > 0 ? 88.2 : 0.0;
-        double avgMarks = totalStudents > 0 ? 78.5 : 0.0;
+        // Calculate real averages
+        Double avgAttendance = studentRepository.findAll().stream()
+                .mapToDouble(s -> s.getAttendancePercentage() != null ? s.getAttendancePercentage() : 0.0)
+                .average().orElse(0.0);
+        
+        Double avgMarks = marksRepository.findAll().stream()
+                .mapToDouble(m -> m.getGpa() != null ? m.getGpa() * 10 : 0.0)
+                .average().orElse(0.0);
 
-        return new DashboardStatsDto(totalStudents, totalFaculty, avgAttendance, avgMarks);
+        // Department distribution
+        java.util.Map<String, Long> deptDist = studentRepository.findAll().stream()
+                .filter(s -> s.getDepartment() != null)
+                .collect(java.util.stream.Collectors.groupingBy(s -> s.getDepartment().getCode(), java.util.stream.Collectors.counting()));
+
+        return new DashboardStatsDto(
+            totalStudents, 
+            totalFaculty, 
+            Math.round(avgAttendance * 10.0) / 10.0, 
+            Math.round(avgMarks * 10.0) / 10.0, 
+            deptDist,
+            activityLogService.getRecentActivities()
+        );
     }
 }

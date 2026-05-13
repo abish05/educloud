@@ -53,21 +53,36 @@ public class DatabaseSeeder implements CommandLineRunner {
 
             // Seed Departments and Subjects if empty
             if (departmentRepository.count() == 0) {
-                Department cse = new Department();
-                cse.setName("Computer Science and Engineering");
-                cse.setCode("CSE");
-                cse = departmentRepository.save(cse);
+                Department cse = createDept("Computer Science and Engineering", "CSE");
+                Department ece = createDept("Electronics and Communication", "ECE");
+                Department mech = createDept("Mechanical Engineering", "MECH");
+                Department civil = createDept("Civil Engineering", "CIVIL");
 
-                Subject dsa = new Subject();
-                dsa.setName("Data Structures");
-                dsa.setCode("CS301");
-                dsa.setDepartment(cse);
-                dsa.setSemester(3);
-                subjectRepository.save(dsa);
+                createSubject("Data Structures", "CS301", cse, 3);
+                createSubject("Operating Systems", "CS402", cse, 4);
+                createSubject("Digital Circuits", "EC201", ece, 2);
+                createSubject("Microprocessors", "EC503", ece, 5);
+                createSubject("Thermodynamics", "ME302", mech, 3);
+                createSubject("Structural Analysis", "CE401", civil, 4);
             }
         } catch (Exception e) {
             System.err.println("Database seeding failed: " + e.getMessage());
-            // Don't rethrow, let the app start even if seeding fails once
         }
+    }
+
+    private Department createDept(String name, String code) {
+        Department d = new Department();
+        d.setName(name);
+        d.setCode(code);
+        return departmentRepository.save(d);
+    }
+
+    private void createSubject(String name, String code, Department d, int sem) {
+        Subject s = new Subject();
+        s.setName(name);
+        s.setCode(code);
+        s.setDepartment(d);
+        s.setSemester(sem);
+        subjectRepository.save(s);
     }
 }

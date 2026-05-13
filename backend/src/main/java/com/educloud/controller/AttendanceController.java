@@ -28,6 +28,9 @@ public class AttendanceController {
     @Autowired
     private SubjectRepository subjectRepository;
 
+    @Autowired
+    private ActivityLogService activityLogService;
+
     @PostMapping("/mark")
     public ResponseEntity<Attendance> markAttendance(@RequestBody AttendanceDto dto) {
         Student student = studentRepository.findById(dto.getStudentId()).orElseThrow();
@@ -42,7 +45,35 @@ public class AttendanceController {
         attendance.setDate(dto.getDate() != null ? dto.getDate() : LocalDate.now());
         attendance.setStatus(dto.getStatus());
         
-        return ResponseEntity.ok(attendanceRepository.save(attendance));
+        Attendance saved = attendanceRepository.save(attendance);
+        activityLogService.logActivity("Marked attendance for " + student.getName() + " in " + subject.getName());
+        
+        // Recalculate student attendance percentage
+        List<Attendance> allAtt = attendanceRepository.findByStudentId(student.getId());
+        if (!allAtt.isEmpty()) {
+            long presentCount = allAtt.stream().filter(a -> "PRESENT".equalsIgnoreCase(a.getStatus())).count();
+            double percentage = (double) presentCount / allAtt.size() * 100.0;
+            student.setAttendancePercentage(Math.round(percentage * 10.0) / 10.0);
+            studentRepository.save(student);
+        }
+
+        return ResponseEntity.ok(saved);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AttendanceDto>> getAllAttendance() {
+        return ResponseEntity.ok(attendanceRepository.findAllByOrderByDateDesc().stream()
+                .map(a -> {
+                    AttendanceDto d = new AttendanceDto();
+                    d.setId(a.getId());
+                    d.setStudentId(a.getStudent().getId());
+                    d.setStudentName(a.getStudent().getName());
+                    d.setSubjectId(a.getSubject().getId());
+                    d.setSubjectName(a.getSubject().getName());
+                    d.setDate(a.getDate());
+                    d.setStatus(a.getStatus());
+                    return d;
+                }).collect(java.util.stream.Collectors.toList()));
     }
 
     @GetMapping("/student/{studentId}")

@@ -3,117 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Internal Marks - EduCloud</title>
+    <title>Marks – EduCloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+    <style>
+        table { width:100%; border-collapse:collapse; }
+        th,td { padding:0.9rem 1rem; text-align:left; border-bottom:1px solid var(--glass-border); }
+        th { color:var(--text-light); font-size:0.85rem; text-transform:uppercase; }
+        .marks-input { width:70px; padding:0.4rem 0.6rem; border-radius:6px; border:1px solid var(--glass-border); background:var(--card-bg); color:var(--text); text-align:center; }
+        .gpa-cell { font-weight:700; }
+        .gpa-a { color:#22c55e; }
+        .gpa-b { color:#6366f1; }
+        .gpa-c { color:#f59e0b; }
+        .gpa-f { color:#ef4444; }
+        #histTab { display:none; }
+        .tab-bar { display:flex; gap:0.5rem; margin-bottom:2rem; }
+        .tab-btn { padding:0.6rem 1.5rem; border-radius:8px; border:none; cursor:pointer; font-weight:600; background:rgba(99,102,241,0.1); color:var(--primary); transition:all 0.2s; }
+        .tab-btn.active { background:var(--primary); color:white; }
+    </style>
 </head>
 <body>
-    <div class="dashboard-layout">
-        <aside class="sidebar glass">
-            <h2 class="logo">EduCloud</h2>
-            <nav class="sidebar-nav">
-                <a href="admin-dashboard.html" class="nav-item">Dashboard</a>
-                <a href="students.html" class="nav-item">Students</a>
-                <a href="faculty.html" class="nav-item">Faculty</a>
-                <a href="attendance.html" class="nav-item">Attendance</a>
-                <a href="marks.html" class="nav-item active">Marks</a>
-                <a href="settings.html" class="nav-item">Settings</a>
-            </nav>
-        </aside>
+<div class="dashboard-layout">
+    <aside class="sidebar glass">
+        <h2 class="logo">🎓 EduCloud</h2>
+        <nav class="sidebar-nav">
+            <a href="admin-dashboard.html" class="nav-item">📊 Dashboard</a>
+            <a href="students.html" class="nav-item">👨‍🎓 Students</a>
+            <a href="faculty.html" class="nav-item">👩‍🏫 Faculty</a>
+            <a href="attendance.html" class="nav-item">📋 Attendance</a>
+            <a href="marks.html" class="nav-item active">📝 Marks</a>
+            <a href="settings.html" class="nav-item">⚙️ Settings</a>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <div class="topbar">
+            <h2>📝 Marks Management</h2>
+            <button id="logoutBtn" class="btn">Logout</button>
+        </div>
 
-        <main class="main-content">
-            <div class="topbar">
-                <h2>Internal Marks Management</h2>
-                <div class="user-profile">
-                    <span id="userNameDisplay">Admin</span>
-                    <a href="#" id="logoutBtn" class="btn" style="margin-left: 1rem;">Logout</a>
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="showTab('entry',this)">📝 Enter Marks</button>
+            <button class="tab-btn" onclick="showTab('history',this)">📊 View All Marks</button>
+        </div>
+
+        <!-- Entry Tab -->
+        <div id="entryTab">
+            <div class="glass" style="padding:1.5rem;border-radius:16px;margin-bottom:1.5rem;">
+                <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                    <div>
+                        <label style="display:block;font-size:0.85rem;color:var(--text-light);margin-bottom:0.3rem;">📚 Subject</label>
+                        <select id="subjectSelect" style="padding:0.7rem;border-radius:8px;border:1px solid var(--glass-border);background:var(--card-bg);color:var(--text);"></select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;color:var(--text-light);margin-bottom:0.3rem;">📅 Semester</label>
+                        <select id="semSelect" style="padding:0.7rem;border-radius:8px;border:1px solid var(--glass-border);background:var(--card-bg);color:var(--text);">
+                            <option value="1">Sem 1</option><option value="2">Sem 2</option>
+                            <option value="3">Sem 3</option><option value="4">Sem 4</option>
+                            <option value="5" selected>Sem 5</option><option value="6">Sem 6</option>
+                            <option value="7">Sem 7</option><option value="8">Sem 8</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;color:var(--text-light);margin-bottom:0.3rem;">🎓 Department</label>
+                        <select id="deptFilter" style="padding:0.7rem;border-radius:8px;border:1px solid var(--glass-border);background:var(--card-bg);color:var(--text);">
+                            <option value="">All Students</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <div class="glass" style="padding: 2rem; border-radius: 16px;">
-                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                    <select id="subjectSelect" style="padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border);">
-                        <option value="1">Data Structures (CS301)</option>
-                    </select>
-                    <select id="semesterSelect" style="padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border);">
-                        <option value="1">Semester 1</option>
-                        <option value="2">Semester 2</option>
-                        <option value="3">Semester 3</option>
-                    </select>
-                </div>
-
-                <table style="width: 100%; border-collapse: collapse;">
+            <div class="glass" style="padding:1.5rem;border-radius:16px;overflow-x:auto;">
+                <table>
                     <thead>
                         <tr>
-                            <th>Student ID</th>
+                            <th>#</th>
+                            <th>Stu. ID</th>
                             <th>Name</th>
-                            <th>Internal (25)</th>
-                            <th>Semester (75)</th>
+                            <th>Internal<br><small>(Max 25)</small></th>
+                            <th>Assignment<br><small>(Max 25)</small></th>
+                            <th>Semester<br><small>(Max 50)</small></th>
+                            <th>Total<br><small>(100)</small></th>
+                            <th>Grade</th>
                         </tr>
                     </thead>
-                    <tbody id="marksList">
-                        <!-- Loaded via JS -->
-                    </tbody>
+                    <tbody id="marksList"></tbody>
                 </table>
-                <button id="saveMarksBtn" class="btn btn-primary" style="margin-top: 2rem; width: 200px;">Save Marks</button>
             </div>
-        </main>
-    </div>
+            <button id="saveMarksBtn" class="btn btn-primary" style="margin-top:1.5rem;width:200px;">💾 Save Marks</button>
+        </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const marksList = document.getElementById('marksList');
-            const saveBtn = document.getElementById('saveMarksBtn');
+        <!-- History Tab -->
+        <div id="histTab">
+            <div class="glass" style="padding:1.5rem;border-radius:16px;overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Subject</th>
+                            <th>Internal</th>
+                            <th>Semester</th>
+                            <th>Total</th>
+                            <th>GPA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marksHistory"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
 
-            async function loadStudents() {
-                try {
-                    const students = await apiCall('/students');
-                    marksList.innerHTML = '';
-                    students.forEach(s => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">${s.studentId}</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">${s.name}</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">
-                                <input type="number" class="internal-input" data-id="${s.id}" value="0" max="25" style="width: 60px; padding: 0.4rem;">
-                            </td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">
-                                <input type="number" class="semester-input" data-id="${s.id}" value="0" max="75" style="width: 60px; padding: 0.4rem;">
-                            </td>
-                        `;
-                        marksList.appendChild(tr);
-                    });
-                } catch (e) { console.error(e); }
+<script src="js/db.js"></script>
+<script>
+    if (!localStorage.getItem('token')) window.location.href = 'login.html';
+    document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('token'); window.location.href = 'login.html'; };
+
+    function showTab(tab, el) {
+        document.getElementById('entryTab').style.display = tab === 'entry' ? 'block' : 'none';
+        document.getElementById('histTab').style.display  = tab === 'history' ? 'block' : 'none';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        if (tab === 'history') loadHistory();
+    }
+
+    async function loadInitialData() {
+        try {
+            // Load Subjects
+            const sResp = await fetch(`${API_BASE}/subjects`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const subjects = await sResp.json();
+            const subjectSel = document.getElementById('subjectSelect');
+            subjects.forEach(s => subjectSel.innerHTML += `<option value="${s.id}">${s.name} (${s.code})</option>`);
+
+            // Load Departments
+            const dResp = await fetch(`${API_BASE}/departments`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const depts = await dResp.json();
+            const deptFil = document.getElementById('deptFilter');
+            depts.forEach(d => deptFil.innerHTML += `<option value="${d.id}">${d.code}</option>`);
+
+            await loadStudents();
+        } catch (err) {
+            console.error('Error loading initial data:', err);
+        }
+    }
+
+    async function loadStudents() {
+        try {
+            const response = await fetch(`${API_BASE}/students`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = 'login.html';
+                return;
             }
+            allStudents = await response.json();
+            renderStudents();
+        } catch (err) {
+            console.error('Error loading students:', err);
+        }
+    }
 
-            saveBtn.onclick = async () => {
-                const rows = document.querySelectorAll('#marksList tr');
-                const subjectId = document.getElementById('subjectSelect').value;
-                const semester = document.getElementById('semesterSelect').value;
-                
-                try {
-                    for (const row of rows) {
-                        const studentId = row.querySelector('.internal-input').getAttribute('data-id');
-                        const internal = row.querySelector('.internal-input').value;
-                        const semesterMarks = row.querySelector('.semester-input').value;
-                        
-                        await apiCall('/marks', 'POST', {
-                            studentId: studentId,
-                            subjectId: subjectId,
-                            semester: semester,
-                            internalMarks: internal,
-                            semesterMarks: semesterMarks,
-                            gpa: (parseFloat(internal) + parseFloat(semesterMarks)) / 10
-                        });
-                    }
-                    alert('Marks saved successfully!');
-                } catch (e) { alert('Failed to save marks'); }
+    function getGrade(total) {
+        if (total >= 90) return { letter:'O',  cls:'gpa-a', gpa:'10.0' };
+        if (total >= 80) return { letter:'A+', cls:'gpa-a', gpa:'9.0'  };
+        if (total >= 70) return { letter:'A',  cls:'gpa-b', gpa:'8.0'  };
+        if (total >= 60) return { letter:'B+', cls:'gpa-b', gpa:'7.0'  };
+        if (total >= 50) return { letter:'B',  cls:'gpa-c', gpa:'6.0'  };
+        if (total >= 40) return { letter:'C',  cls:'gpa-c', gpa:'5.0'  };
+        return { letter:'F', cls:'gpa-f', gpa:'0.0' };
+    }
+
+    function renderStudents() {
+        const deptId = document.getElementById('deptFilter').value;
+        let students = [...allStudents];
+        if (deptId) students = students.filter(s => String(s.departmentId) === String(deptId));
+
+        const tbody = document.getElementById('marksList');
+        tbody.innerHTML = '';
+
+        if (students.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-light);">No students. Add students first from the Students section.</td></tr>';
+            return;
+        }
+
+        students.forEach((s, i) => {
+            tbody.innerHTML += `
+            <tr>
+                <td>${i+1}</td>
+                <td>${s.studentId || s.id}</td>
+                <td><strong>${s.name}</strong></td>
+                <td><input type="number" class="marks-input int-input" data-id="${s.id}" data-name="${s.name}" value="0" min="0" max="25" oninput="calcTotal(this)"></td>
+                <td><input type="number" class="marks-input asg-input" data-id="${s.id}" value="0" min="0" max="25" oninput="calcTotal(this)"></td>
+                <td><input type="number" class="marks-input sem-input" data-id="${s.id}" value="0" min="0" max="50" oninput="calcTotal(this)"></td>
+                <td class="total-cell" id="total-${s.id}" style="font-weight:700;">0</td>
+                <td class="gpa-cell" id="grade-${s.id}">—</td>
+            </tr>`;
+        });
+    }
+
+    function calcTotal(inp) {
+        const row = inp.closest('tr');
+        const int = parseFloat(row.querySelector('.int-input').value) || 0;
+        const asg = parseFloat(row.querySelector('.asg-input').value) || 0;
+        const sem = parseFloat(row.querySelector('.sem-input').value) || 0;
+        const total = int + asg + sem;
+        const id = inp.getAttribute('data-id');
+        const g = getGrade(total);
+        document.getElementById(`total-${id}`).textContent = total;
+        const gradeEl = document.getElementById(`grade-${id}`);
+        gradeEl.textContent = g.letter + ' (' + g.gpa + ')';
+        gradeEl.className = 'gpa-cell ' + g.cls;
+    }
+
+    document.getElementById('deptFilter').onchange = renderStudents;
+
+    document.getElementById('saveMarksBtn').onclick = async () => {
+        const subjectId  = document.getElementById('subjectSelect').value;
+        const semester = document.getElementById('semSelect').value;
+        
+        let savedCount = 0;
+        const rows = document.querySelectorAll('#marksList tr');
+
+        for (const row of rows) {
+            const intInp = row.querySelector('.int-input');
+            if (!intInp) continue;
+            
+            const id   = intInp.getAttribute('data-id');
+            const int  = parseFloat(row.querySelector('.int-input').value) || 0;
+            const asg  = parseFloat(row.querySelector('.asg-input').value) || 0;
+            const sem  = parseFloat(row.querySelector('.sem-input').value) || 0;
+            const total = int + asg + sem;
+            const g = getGrade(total);
+
+            const record = { 
+                studentId: parseInt(id), 
+                subjectId: parseInt(subjectId), 
+                semester: parseInt(semester), 
+                internalMarks: int + asg, 
+                semesterMarks: sem, 
+                gpa: parseFloat(g.gpa) 
             };
 
-            loadStudents();
-        });
-    </script>
+            try {
+                const response = await fetch(`${API_BASE}/marks`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(record)
+                });
+                if (response.ok) savedCount++;
+            } catch (err) {
+                console.error('Error saving marks:', err);
+            }
+        }
+        alert('✅ Marks saved for ' + savedCount + ' students!');
+    };
+
+    async function loadHistory() {
+        const tbody = document.getElementById('marksHistory');
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;">Loading marks data...</td></tr>';
+        
+        try {
+            const response = await fetch(`${API_BASE}/marks`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const all = await response.json();
+            tbody.innerHTML = '';
+            if (all.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-light);">No marks records yet.</td></tr>';
+                return;
+            }
+            all.forEach(m => {
+                const g = getGrade((m.internalMarks||0) + (m.semesterMarks||0));
+                tbody.innerHTML += `
+                <tr>
+                    <td>${m.studentName}</td>
+                    <td>${m.subjectName}</td>
+                    <td>${m.internalMarks}</td>
+                    <td>${m.semesterMarks}</td>
+                    <td><strong>${(m.internalMarks||0) + (m.semesterMarks||0)}</strong></td>
+                    <td class="${g.cls}">${g.letter} (${m.gpa})</td>
+                </tr>`;
+            });
+        } catch (err) {
+            console.error('Error fetching marks history:', err);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#ef4444;">Error loading data.</td></tr>';
+        }
+    }
+
+    loadInitialData();
+</script>
 </body>
 </html>

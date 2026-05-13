@@ -3,63 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - EduCloud</title>
+    <title>Dashboard – EduCloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+    <style>
+        .stat-card { position: relative; overflow: hidden; }
+        .stat-card::before { content:''; position:absolute; top:-30px; right:-30px; width:100px; height:100px; border-radius:50%; background: rgba(99,102,241,0.1); }
+        .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .stat-change { font-size: 0.8rem; color: #22c55e; margin-top: 0.3rem; }
+        .recent-section { margin-top: 2rem; }
+        .activity-item { display:flex; align-items:center; gap:1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--glass-border); }
+        .activity-dot { width:10px; height:10px; border-radius:50%; background: var(--primary); flex-shrink:0; }
+    </style>
 </head>
 <body>
-    <div class="dashboard-layout">
-        <!-- Sidebar -->
-        <aside class="sidebar glass">
-            <h2 class="logo">EduCloud</h2>
-            <nav class="sidebar-nav">
-                <a href="admin-dashboard.html" class="nav-item active">Dashboard</a>
-                <a href="students.html" class="nav-item">Students</a>
-                <a href="#" class="nav-item">Attendance</a>
-                <a href="#" class="nav-item">Marks</a>
-                <a href="#" class="nav-item">Settings</a>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h2>Overview</h2>
-                <div class="user-profile">
-                    <span id="userNameDisplay">Admin User</span>
-                    <a href="#" id="logoutBtn" class="btn btn-primary" style="margin-left: 1rem;">Logout</a>
-                </div>
+<div class="dashboard-layout">
+    <aside class="sidebar glass">
+        <h2 class="logo">🎓 EduCloud</h2>
+        <nav class="sidebar-nav" id="sidebarNav">
+            <a href="admin-dashboard.html" class="nav-item active">📊 Dashboard</a>
+            <a href="students.html" class="nav-item">👨‍🎓 Students</a>
+            <a href="faculty.html" class="nav-item">👩‍🏫 Faculty</a>
+            <a href="attendance.html" class="nav-item">📋 Attendance</a>
+            <a href="marks.html" class="nav-item">📝 Marks</a>
+            <a href="settings.html" class="nav-item">⚙️ Settings</a>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h2>Dashboard Overview</h2>
+                <p style="color:var(--text-light); font-size:0.9rem;" id="semesterLabel">Academic Year 2025-2026 · Semester 5</p>
             </div>
-
-            <div class="stats-grid">
-                <div class="stat-card glass">
-                    <h3>Total Students</h3>
-                    <div class="stat-value" id="stat-students">1,245</div>
+            <div class="user-profile" style="display:flex;align-items:center;gap:1rem;">
+                <div style="text-align:right;">
+                    <div style="font-weight:600;" id="userNameDisplay">Admin</div>
+                    <div style="font-size:0.8rem; color:var(--text-light);" id="userRoleDisplay">Administrator</div>
                 </div>
-                <div class="stat-card glass">
-                    <h3>Total Faculty</h3>
-                    <div class="stat-value" id="stat-faculty">42</div>
-                </div>
-                <div class="stat-card glass">
-                    <h3>Avg Attendance</h3>
-                    <div class="stat-value" id="stat-attendance">86%</div>
-                </div>
-                <div class="stat-card glass">
-                    <h3>Avg Marks</h3>
-                    <div class="stat-value" id="stat-marks">74.5</div>
-                </div>
+                <button id="logoutBtn" class="btn btn-primary">Logout</button>
             </div>
+        </div>
 
-            <div style="background: var(--card-bg); padding: 2rem; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);">
-                <h3>Performance Analytics</h3>
-                <canvas id="performanceChart" height="100"></canvas>
+        <div class="stats-grid">
+            <div class="stat-card glass">
+                <div class="stat-icon">👨‍🎓</div>
+                <h3>Total Students</h3>
+                <div class="stat-value" id="stat-students">0</div>
+                <div class="stat-change">▲ Updated live</div>
             </div>
-        </main>
-    </div>
+            <div class="stat-card glass">
+                <div class="stat-icon">👩‍🏫</div>
+                <h3>Total Faculty</h3>
+                <div class="stat-value" id="stat-faculty">0</div>
+                <div class="stat-change">▲ Active staff</div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon">📋</div>
+                <h3>Avg Attendance</h3>
+                <div class="stat-value" id="stat-attendance">0%</div>
+                <div class="stat-change">▲ This semester</div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon">📝</div>
+                <h3>Avg Marks</h3>
+                <div class="stat-value" id="stat-marks">0</div>
+                <div class="stat-change">▲ Out of 100</div>
+            </div>
+        </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/dashboard.js"></script>
+        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:2rem; margin-top: 2rem;">
+            <div class="glass" style="padding:2rem; border-radius:16px;">
+                <h3 style="margin-bottom:1.5rem;">📈 Performance Analytics</h3>
+                <canvas id="performanceChart" height="120"></canvas>
+            </div>
+            <div class="glass" style="padding:2rem; border-radius:16px;">
+                <h3 style="margin-bottom:1.5rem;">🎯 Dept Distribution</h3>
+                <canvas id="deptChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="recent-section glass" style="padding:2rem; border-radius:16px;">
+            <h3>🕐 Recent Activity</h3>
+            <div id="activityLog" style="margin-top:1rem;">
+                <div class="activity-item"><div class="activity-dot"></div><span>System initialized – EduCloud ready</span></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="js/db.js"></script>
+<script>
+    // Auth guard
+    if (!localStorage.getItem('token')) window.location.href = 'login.html';
+
+    document.getElementById('userNameDisplay').textContent = localStorage.getItem('userName') || 'Admin';
+    const role = localStorage.getItem('userRole') || '';
+    document.getElementById('userRoleDisplay').textContent = role === 'ROLE_ADMIN' ? 'Administrator' : 'Faculty';
+
+    document.getElementById('logoutBtn').onclick = () => {
+        localStorage.removeItem('token');
+        window.location.href = 'login.html';
+    };
+
+    // Load settings from local storage (UI preferences)
+    const settings = DB.getSettings();
+    document.getElementById('semesterLabel').textContent = `Academic Year ${settings.academicYear} · Semester ${settings.currentSemester}`;
+
+    const API_BASE = 'http://localhost:8080/api';
+    const token = localStorage.getItem('token');
+
+    async function loadDashboardData() {
+        try {
+            const response = await fetch(`${API_BASE}/dashboard/stats`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const stats = await response.json();
+            
+            // Update Stats
+            document.getElementById('stat-students').textContent = stats.totalStudents;
+            document.getElementById('stat-faculty').textContent = stats.totalFaculty;
+            document.getElementById('stat-attendance').textContent = stats.averageAttendance + '%';
+            document.getElementById('stat-marks').textContent = stats.averageMarks;
+
+            // Render Recent Activity
+            const activityLog = document.getElementById('activityLog');
+            activityLog.innerHTML = '';
+            
+            if (stats.recentActivities && stats.recentActivities.length > 0) {
+                stats.recentActivities.forEach(act => {
+                    const date = new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const div = document.createElement('div');
+                    div.className = 'activity-item';
+                    div.innerHTML = `<div class="activity-dot"></div><span><strong>${act.userName}:</strong> ${act.action} <small style="color:var(--text-light); margin-left:0.5rem;">${date}</small></span>`;
+                    activityLog.appendChild(div);
+                });
+            } else {
+                activityLog.innerHTML = '<div class="activity-item"><span>No recent activity</span></div>';
+            }
+
+            renderCharts(stats);
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+            // Fallback to local DB if backend fails (for demo purposes)
+            const localStats = DB.getDashboardStats();
+            document.getElementById('stat-students').textContent = localStats.totalStudents;
+            document.getElementById('stat-faculty').textContent = localStats.totalFaculty;
+        }
+    }
+
+    function renderCharts(stats) {
+        // Performance chart (keeping mock data for now as history is complex)
+        new Chart(document.getElementById('performanceChart'), {
+            type: 'line',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                datasets: [{
+                    label: 'Avg Attendance %',
+                    data: [82,85,88,84,86,90,89,87,83,88,91,stats.averageAttendance || 89],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99,102,241,0.1)',
+                    fill: true,
+                    tension: 0.4
+                },{
+                    label: 'Avg Marks',
+                    data: [70,72,75,68,74,78,76,73,70,76,80,stats.averageMarks || 77],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139,92,246,0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position:'top' } } }
+        });
+
+        // Dept chart
+        const deptLabels = Object.keys(stats.deptDistribution || {}).length ? Object.keys(stats.deptDistribution) : ['CSE','ECE','MECH','IT','CIVIL'];
+        const deptData   = Object.keys(stats.deptDistribution || {}).length ? Object.values(stats.deptDistribution) : [1,1,1,1,1];
+        new Chart(document.getElementById('deptChart'), {
+            type: 'doughnut',
+            data: {
+                labels: deptLabels,
+                datasets: [{ data: deptData, backgroundColor: ['#6366f1','#8b5cf6','#06b6d4','#22c55e','#f59e0b'] }]
+            },
+            options: { responsive: true, plugins: { legend: { position:'bottom' } } }
+        });
+    }
+
+    loadDashboardData();
+</script>
 </body>
 </html>

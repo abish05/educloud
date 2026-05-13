@@ -3,132 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Management - EduCloud</title>
+    <title>Students – EduCloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
     <style>
-        .table-container {
-            margin-top: 2rem;
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        th, td {
-            text-align: left;
-            padding: 1rem;
-            border-bottom: 1px solid var(--glass-border);
-        }
-        th {
-            color: var(--text-light);
-            font-weight: 600;
-        }
-        .action-btns {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background-color: var(--bg);
-            margin: 5% auto;
-            padding: 2rem;
-            border-radius: 16px;
-            width: 500px;
-            box-shadow: var(--glass-shadow);
-        }
+        .search-bar { display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+        .search-bar input, .search-bar select { padding:0.7rem 1rem; border-radius:10px; border:1px solid var(--glass-border); background:var(--card-bg); color:var(--text); flex:1; min-width:150px; }
+        table { width:100%; border-collapse:collapse; }
+        th,td { padding:1rem; text-align:left; border-bottom:1px solid var(--glass-border); }
+        th { color:var(--text-light); font-weight:600; font-size:0.85rem; text-transform:uppercase; }
+        tr:hover { background: rgba(99,102,241,0.05); }
+        .badge { padding:0.3rem 0.7rem; border-radius:20px; font-size:0.8rem; font-weight:500; }
+        .badge-1 { background:rgba(99,102,241,0.2); color:#6366f1; }
+        .badge-2 { background:rgba(139,92,246,0.2); color:#8b5cf6; }
+        .badge-3 { background:rgba(6,182,212,0.2); color:#06b6d4; }
+        .badge-4 { background:rgba(34,197,94,0.2); color:#22c55e; }
+        .modal { display:none; position:fixed; z-index:1000; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); overflow-y:auto; }
+        .modal-content { background:var(--bg); margin:2% auto; padding:2.5rem; border-radius:20px; width:90%; max-width:650px; border:1px solid var(--glass-border); }
+        .modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .form-group { margin-bottom:0; }
+        .form-group label { display:block; margin-bottom:0.4rem; font-weight:500; font-size:0.9rem; }
+        .form-group input, .form-group select { width:100%; padding:0.7rem 1rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--card-bg); color:var(--text); }
+        .att-bar { height:6px; background:#e2e8f0; border-radius:3px; margin-top:4px; }
+        .att-fill { height:100%; border-radius:3px; background:linear-gradient(to right,#6366f1,#8b5cf6); }
     </style>
 </head>
 <body>
-    <div class="dashboard-layout">
-        <!-- Sidebar -->
-        <aside class="sidebar glass">
-            <h2 class="logo">EduCloud</h2>
-            <nav class="sidebar-nav">
-                <a href="admin-dashboard.html" class="nav-item">Dashboard</a>
-                <a href="students.html" class="nav-item active">Students</a>
-                <a href="#" class="nav-item">Attendance</a>
-                <a href="#" class="nav-item">Marks</a>
-                <a href="#" class="nav-item">Settings</a>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h2>Student Management</h2>
-                <div class="user-profile">
-                    <button id="addStudentBtn" class="btn btn-primary">Add New Student</button>
-                    <a href="#" id="logoutBtn" class="btn" style="margin-left: 1rem;">Logout</a>
-                </div>
+<div class="dashboard-layout">
+    <aside class="sidebar glass">
+        <h2 class="logo">🎓 EduCloud</h2>
+        <nav class="sidebar-nav">
+            <a href="admin-dashboard.html" class="nav-item">📊 Dashboard</a>
+            <a href="students.html" class="nav-item active">👨‍🎓 Students</a>
+            <a href="faculty.html" class="nav-item">👩‍🏫 Faculty</a>
+            <a href="attendance.html" class="nav-item">📋 Attendance</a>
+            <a href="marks.html" class="nav-item">📝 Marks</a>
+            <a href="settings.html" class="nav-item">⚙️ Settings</a>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <div class="topbar">
+            <h2>👨‍🎓 Student Management</h2>
+            <div style="display:flex;gap:1rem;align-items:center;">
+                <button id="exportBtn" class="btn" style="background:rgba(99,102,241,0.2);color:var(--primary);">📤 Export CSV</button>
+                <button id="addStudentBtn" class="btn btn-primary">+ Add Student</button>
+                <button id="logoutBtn" class="btn">Logout</button>
             </div>
-
-            <div class="table-container glass" style="padding: 1.5rem; border-radius: 16px;">
-                <table id="studentsTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Reg Number</th>
-                            <th>Department</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentList">
-                        <!-- Data will be populated here -->
-                    </tbody>
-                </table>
-            </div>
-        </main>
-    </div>
-
-    <!-- Add Student Modal -->
-    <div id="studentModal" class="modal">
-        <div class="modal-content glass">
-            <h3 id="modalTitle">Add New Student</h3>
-            <form id="studentForm" style="margin-top: 1.5rem;">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="name" required>
-                </div>
-                <div class="form-group">
-                    <label>Student ID (Custom)</label>
-                    <input type="text" id="studentId" required>
-                </div>
-                <div class="form-group">
-                    <label>Register Number</label>
-                    <input type="text" id="registerNumber" required>
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="email" required>
-                </div>
-                <div class="form-group">
-                    <label>Year</label>
-                    <input type="number" id="year" value="1" required>
-                </div>
-                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button type="submit" class="btn btn-primary w-100">Save Student</button>
-                    <button type="button" id="closeModal" class="btn w-100" style="background: #e2e8f0;">Cancel</button>
-                </div>
-            </form>
         </div>
-    </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/students.js"></script>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search by name, ID, email…">
+            <select id="deptFilter"><option value="">All Departments</option></select>
+            <select id="yearFilter">
+                <option value="">All Years</option>
+                <option value="1">Year 1</option>
+                <option value="2">Year 2</option>
+                <option value="3">Year 3</option>
+                <option value="4">Year 4</option>
+            </select>
+        </div>
+
+        <div class="glass" style="padding:1.5rem; border-radius:16px; overflow-x:auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <span id="totalCount" style="color:var(--text-light);font-size:0.9rem;">0 students</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stu. ID</th>
+                        <th>Name</th>
+                        <th>Reg No.</th>
+                        <th>Dept</th>
+                        <th>Year</th>
+                        <th>Email</th>
+                        <th>Attendance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentList"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- Add/Edit Student Modal -->
+<div id="studentModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle" style="margin-bottom:1.5rem;">Add New Student</h3>
+        <form id="studentForm">
+            <div class="modal-grid">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="s_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Student ID *</label>
+                    <input type="text" id="s_studentId" required placeholder="e.g. CSE2023001">
+                </div>
+                <div class="form-group">
+                    <label>Register Number *</label>
+                    <input type="text" id="s_regNo" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="s_email" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="s_phone" placeholder="10-digit number">
+                </div>
+                <div class="form-group">
+                    <label>Department *</label>
+                    <select id="s_dept" required>
+                        <option value="">Select Department</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Year *</label>
+                    <select id="s_year" required>
+                        <option value="1">Year 1</option>
+                        <option value="2">Year 2</option>
+                        <option value="3">Year 3</option>
+                        <option value="4">Year 4</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select id="s_gender">
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="s_dob">
+                </div>
+                <div class="form-group">
+                    <label>Blood Group</label>
+                    <select id="s_blood">
+                        <option value="">Select</option>
+                        <option>A+</option><option>A-</option>
+                        <option>B+</option><option>B-</option>
+                        <option>O+</option><option>O-</option>
+                        <option>AB+</option><option>AB-</option>
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label>Address</label>
+                    <input type="text" id="s_address" placeholder="Full address">
+                </div>
+                <div class="form-group">
+                    <label>Parent Name</label>
+                    <input type="text" id="s_parentName">
+                </div>
+                <div class="form-group">
+                    <label>Parent Phone</label>
+                    <input type="tel" id="s_parentPhone">
+                </div>
+                <div class="form-group">
+                    <label>Attendance %</label>
+                    <input type="number" id="s_att" value="0" min="0" max="100">
+                </div>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:2rem;">
+                <button type="submit" class="btn btn-primary w-100">💾 Save Student</button>
+                <button type="button" id="closeModal" class="btn w-100" style="background:rgba(100,116,139,0.2);">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/db.js"></script>
+<script>
+    if (!localStorage.getItem('token')) window.location.href = 'login.html';
+    document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('token'); window.location.href = 'login.html'; };
+
+    const API_BASE = 'http://localhost:8080/api';
+    const token = localStorage.getItem('token');
+
+    let allStudents = [];
+    let editId = null;
+
+    async function loadInitialData() {
+        try {
+            // Load Departments
+            const dResp = await fetch(`${API_BASE}/departments`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const depts = await dResp.json();
+            const deptSelect = document.getElementById('s_dept');
+            const deptFilter = document.getElementById('deptFilter');
+            depts.forEach(d => {
+                deptSelect.innerHTML += `<option value="${d.id}">${d.name} (${d.code})</option>`;
+                deptFilter.innerHTML += `<option value="${d.id}">${d.code}</option>`;
+            });
+
+            await loadStudents();
+        } catch (err) {
+            console.error('Error loading initial data:', err);
+        }
+    }
+
+    async function loadStudents() {
+        try {
+            const response = await fetch(`${API_BASE}/students`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = 'login.html';
+                return;
+            }
+            allStudents = await response.json();
+            renderStudents();
+        } catch (err) {
+            console.error('Error loading students:', err);
+        }
+    }
+
+    function renderStudents() {
+        const search  = document.getElementById('searchInput').value.toLowerCase();
+        const deptId  = document.getElementById('deptFilter').value;
+        const year    = document.getElementById('yearFilter').value;
+        let students  = [...allStudents];
+
+        if (search) students = students.filter(s =>
+            (s.name||'').toLowerCase().includes(search) ||
+            (s.studentId||'').toLowerCase().includes(search) ||
+            (s.email||'').toLowerCase().includes(search) ||
+            (s.registerNumber||'').toLowerCase().includes(search)
+        );
+        if (deptId) students = students.filter(s => String(s.departmentId) === String(deptId));
+        if (year) students = students.filter(s => String(s.year) === String(year));
+
+        document.getElementById('totalCount').textContent = students.length + ' student(s)';
+        const tbody = document.getElementById('studentList');
+        tbody.innerHTML = '';
+
+        if (students.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--text-light);">No students found. Click "+ Add Student" to begin.</td></tr>';
+            return;
+        }
+
+        const badgeClass = ['badge-1','badge-2','badge-3','badge-4'];
+        students.forEach((s, i) => {
+            const att = s.attendancePercentage || 0;
+            const attColor = att >= 75 ? '#22c55e' : att >= 60 ? '#f59e0b' : '#ef4444';
+            tbody.innerHTML += `
+            <tr>
+                <td><strong>${s.studentId||'—'}</strong></td>
+                <td>${s.name}</td>
+                <td>${s.registerNumber||'—'}</td>
+                <td><span class="badge ${badgeClass[i%4]}">${s.departmentName||'—'}</span></td>
+                <td>Year ${s.year}</td>
+                <td>${s.email}</td>
+                <td>
+                    <span style="color:${attColor};font-weight:600;">${Math.round(att)}%</span>
+                    <div class="att-bar"><div class="att-fill" style="width:${att}%;background:${attColor};"></div></div>
+                </td>
+                <td>
+                    <button class="btn" onclick="editStudent(${s.id})" style="padding:0.3rem 0.8rem;font-size:0.8rem;background:rgba(99,102,241,0.2);color:var(--primary);margin-right:4px;">✏️ Edit</button>
+                    <button class="btn" onclick="delStudent(${s.id})" style="padding:0.3rem 0.8rem;font-size:0.8rem;background:rgba(239,68,68,0.2);color:#ef4444;">🗑️</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    ['searchInput','deptFilter','yearFilter'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderStudents);
+    });
+
+    document.getElementById('addStudentBtn').onclick = () => {
+        editId = null;
+        document.getElementById('modalTitle').textContent = '+ Add New Student';
+        document.getElementById('studentForm').reset();
+        document.getElementById('studentModal').style.display = 'block';
+    };
+
+    function editStudent(id) {
+        const s = allStudents.find(s => s.id === id);
+        if (!s) return;
+        editId = id;
+        document.getElementById('modalTitle').textContent = '✏️ Edit Student';
+        document.getElementById('s_name').value       = s.name || '';
+        document.getElementById('s_studentId').value  = s.studentId || '';
+        document.getElementById('s_regNo').value      = s.registerNumber || '';
+        document.getElementById('s_email').value      = s.email || '';
+        document.getElementById('s_phone').value      = s.phone || '';
+        document.getElementById('s_dept').value       = s.departmentId || '';
+        document.getElementById('s_year').value       = s.year || '1';
+        document.getElementById('s_gender').value     = s.gender || '';
+        document.getElementById('s_dob').value        = s.dateOfBirth || '';
+        document.getElementById('s_address').value    = s.address || '';
+        document.getElementById('s_att').value        = s.attendancePercentage || 0;
+        document.getElementById('studentModal').style.display = 'block';
+    }
+
+    async function delStudent(id) {
+        if (confirm('Delete this student? This cannot be undone.')) {
+            try {
+                const response = await fetch(`${API_BASE}/students/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    await loadStudents();
+                }
+            } catch (err) {
+                console.error('Error deleting student:', err);
+            }
+        }
+    }
+
+    document.getElementById('studentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const student = {
+            name:           document.getElementById('s_name').value,
+            studentId:      document.getElementById('s_studentId').value,
+            registerNumber: document.getElementById('s_regNo').value,
+            email:          document.getElementById('s_email').value,
+            phone:          document.getElementById('s_phone').value,
+            departmentId:   parseInt(document.getElementById('s_dept').value),
+            year:           parseInt(document.getElementById('s_year').value),
+            gender:         document.getElementById('s_gender').value,
+            dateOfBirth:    document.getElementById('s_dob').value,
+            address:        document.getElementById('s_address').value,
+            attendancePercentage: parseFloat(document.getElementById('s_att').value) || 0,
+        };
+
+        try {
+            const url = editId ? `${API_BASE}/students/${editId}` : `${API_BASE}/students`;
+            const method = editId ? 'PUT' : 'POST';
+            
+            const response = await fetch(url, {
+                method: method,
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(student)
+            });
+
+            if (response.ok) {
+                document.getElementById('studentModal').style.display = 'none';
+                await loadStudents();
+                alert('✅ Student saved successfully!');
+            }
+        } catch (err) {
+            console.error('Error saving student:', err);
+        }
+    });
+
+    document.getElementById('closeModal').onclick = () => document.getElementById('studentModal').style.display = 'none';
+    window.onclick = (e) => { if(e.target === document.getElementById('studentModal')) document.getElementById('studentModal').style.display = 'none'; };
+
+    document.getElementById('exportBtn').onclick = () => {
+        const header = 'StudentID,Name,RegNo,Email,Phone,Department,Year,Gender,Attendance\n';
+        const rows = allStudents.map(s => `${s.studentId},${s.name},${s.registerNumber},${s.email},${s.phone||''},${s.departmentName},${s.year},${s.gender||''},${s.attendancePercentage||0}`).join('\n');
+        const blob = new Blob([header + rows], {type:'text/csv'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'students.csv';
+        a.click();
+    };
+
+    loadInitialData();
+</script>
 </body>
 </html>

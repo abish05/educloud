@@ -3,110 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mark Attendance - EduCloud</title>
+    <title>Attendance – EduCloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+    <style>
+        .att-status-btn { padding:0.4rem 1rem; border-radius:6px; border:none; cursor:pointer; font-weight:600; font-size:0.85rem; transition:all 0.2s; }
+        .att-present { background:#dcfce7; color:#15803d; }
+        .att-absent  { background:#fee2e2; color:#dc2626; }
+        .att-present.active { background:#15803d; color:white; }
+        .att-absent.active  { background:#dc2626; color:white; }
+        .summary-pill { display:inline-flex; align-items:center; gap:0.5rem; padding:0.4rem 1rem; border-radius:20px; font-size:0.85rem; font-weight:600; }
+        table { width:100%; border-collapse:collapse; }
+        th,td { padding:0.9rem 1rem; text-align:left; border-bottom:1px solid var(--glass-border); }
+        th { color:var(--text-light); font-size:0.85rem; text-transform:uppercase; }
+    </style>
 </head>
 <body>
-    <div class="dashboard-layout">
-        <aside class="sidebar glass">
-            <h2 class="logo">EduCloud</h2>
-            <nav class="sidebar-nav">
-                <a href="admin-dashboard.html" class="nav-item">Dashboard</a>
-                <a href="students.html" class="nav-item">Students</a>
-                <a href="faculty.html" class="nav-item">Faculty</a>
-                <a href="attendance.html" class="nav-item active">Attendance</a>
-                <a href="#" class="nav-item">Marks</a>
-                <a href="#" class="nav-item">Settings</a>
-            </nav>
-        </aside>
-
-        <main class="main-content">
-            <div class="topbar">
-                <h2>Mark Attendance</h2>
-                <div class="user-profile">
-                    <span id="userNameDisplay">Faculty</span>
-                    <a href="#" id="logoutBtn" class="btn" style="margin-left: 1rem;">Logout</a>
-                </div>
+<div class="dashboard-layout">
+    <aside class="sidebar glass">
+        <h2 class="logo">🎓 EduCloud</h2>
+        <nav class="sidebar-nav">
+            <a href="admin-dashboard.html" class="nav-item">📊 Dashboard</a>
+            <a href="students.html" class="nav-item">👨‍🎓 Students</a>
+            <a href="faculty.html" class="nav-item">👩‍🏫 Faculty</a>
+            <a href="attendance.html" class="nav-item active">📋 Attendance</a>
+            <a href="marks.html" class="nav-item">📝 Marks</a>
+            <a href="settings.html" class="nav-item">⚙️ Settings</a>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <div class="topbar">
+            <h2>📋 Attendance Management</h2>
+            <div style="display:flex;gap:1rem;align-items:center;">
+                <button id="viewHistoryBtn" class="btn" style="background:rgba(99,102,241,0.2);color:var(--primary);">📅 View History</button>
+                <button id="logoutBtn" class="btn">Logout</button>
             </div>
+        </div>
 
-            <div class="glass" style="padding: 2rem; border-radius: 16px;">
-                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                    <select id="subjectSelect" class="form-group" style="padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border);">
-                        <option value="1">Data Structures (CS301)</option>
+        <div class="glass" style="padding:1.5rem; border-radius:16px; margin-bottom:2rem;">
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+                <div>
+                    <label style="display:block;font-size:0.85rem;color:var(--text-light);margin-bottom:0.3rem;">📅 Date</label>
+                    <input type="date" id="attDate" style="padding:0.7rem;border-radius:8px;border:1px solid var(--glass-border);background:var(--card-bg);color:var(--text);">
+                </div>
+                <div>
+                    <label style="display:block;font-size:0.85rem;color:var(--text-light);margin-bottom:0.3rem;">📚 Subject</label>
+                    <select id="subjectSelect" style="padding:0.7rem;border-radius:8px;border:1px solid var(--glass-border);background:var(--card-bg);color:var(--text);"></select>
+                </div>
+                <div>
+                    <label style="display:block;font-size:0.85rem;color:var(--text-light);margin-bottom:0.3rem;">🎓 Department</label>
+                    <select id="deptFilter" style="padding:0.7rem;border-radius:8px;border:1px solid var(--glass-border);background:var(--card-bg);color:var(--text);">
+                        <option value="">All Students</option>
                     </select>
-                    <input type="date" id="attendanceDate" class="form-group" style="padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border);">
                 </div>
-
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr>
-                            <th>Student ID</th>
-                            <th>Name</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendanceList">
-                        <!-- Loaded via JS -->
-                    </tbody>
-                </table>
-                <button id="saveAttendanceBtn" class="btn btn-primary" style="margin-top: 2rem; width: 200px;">Save Attendance</button>
+                <div style="align-self:flex-end;">
+                    <button id="markAllPresent" class="btn" style="background:#dcfce7;color:#15803d;">✅ Mark All Present</button>
+                </div>
+                <div style="align-self:flex-end;">
+                    <button id="markAllAbsent" class="btn" style="background:#fee2e2;color:#dc2626;">❌ Mark All Absent</button>
+                </div>
             </div>
-        </main>
-    </div>
+        </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const attendanceList = document.getElementById('attendanceList');
-            const saveBtn = document.getElementById('saveAttendanceBtn');
-            const dateInput = document.getElementById('attendanceDate');
-            dateInput.valueAsDate = new Date();
+        <div class="glass" style="padding:1.5rem; border-radius:16px; margin-bottom:1rem;">
+            <div id="attSummary" style="display:flex;gap:1rem;margin-bottom:1rem;"></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Attendance</th>
+                    </tr>
+                </thead>
+                <tbody id="attList"></tbody>
+            </table>
+        </div>
 
-            let students = [];
+        <button id="saveAttBtn" class="btn btn-primary" style="width:200px;">💾 Save Attendance</button>
+    </main>
+</div>
 
-            async function loadStudents() {
-                try {
-                    students = await apiCall('/students');
-                    attendanceList.innerHTML = '';
-                    students.forEach(s => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">${s.studentId}</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">${s.name}</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">
-                                <select class="status-select" data-id="${s.id}" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--glass-border);">
-                                    <option value="PRESENT">Present</option>
-                                    <option value="ABSENT">Absent</option>
-                                </select>
-                            </td>
-                        `;
-                        attendanceList.appendChild(tr);
-                    });
-                } catch (e) { console.error(e); }
+<script src="js/db.js"></script>
+<script>
+    if (!localStorage.getItem('token')) window.location.href = 'login.html';
+    document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('token'); window.location.href = 'login.html'; };
+
+    const API_BASE = 'http://localhost:8080/api';
+    const token = localStorage.getItem('token');
+
+    let allStudents = [];
+
+    async function loadInitialData() {
+        document.getElementById('attDate').valueAsDate = new Date();
+        try {
+            // Load Subjects
+            const sResp = await fetch(`${API_BASE}/subjects`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const subjects = await sResp.json();
+            const subjectSel = document.getElementById('subjectSelect');
+            subjects.forEach(s => subjectSel.innerHTML += `<option value="${s.id}">${s.name} (${s.code})</option>`);
+
+            // Load Departments
+            const dResp = await fetch(`${API_BASE}/departments`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const depts = await dResp.json();
+            const deptFil = document.getElementById('deptFilter');
+            depts.forEach(d => deptFil.innerHTML += `<option value="${d.id}">${d.code}</option>`);
+
+            await loadStudents();
+        } catch (err) {
+            console.error('Error loading initial data:', err);
+        }
+    }
+
+    async function loadStudents() {
+        try {
+            const response = await fetch(`${API_BASE}/students`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = 'login.html';
+                return;
             }
+            allStudents = await response.json();
+            renderStudents();
+        } catch (err) {
+            console.error('Error loading students:', err);
+        }
+    }
 
-            saveBtn.onclick = async () => {
-                const selects = document.querySelectorAll('.status-select');
-                const subjectId = document.getElementById('subjectSelect').value;
-                const date = dateInput.value;
-                
-                try {
-                    for (const select of selects) {
-                        await apiCall('/attendance/mark', 'POST', {
-                            studentId: select.getAttribute('data-id'),
-                            subjectId: subjectId,
-                            date: date,
-                            status: select.value
-                        });
-                    }
-                    alert('Attendance marked successfully!');
-                } catch (e) { alert('Failed to mark attendance'); }
-            };
+    function renderStudents() {
+        const deptId = document.getElementById('deptFilter').value;
+        let students = [...allStudents];
+        if (deptId) students = students.filter(s => String(s.departmentId) === String(deptId));
+        
+        const tbody = document.getElementById('attList');
+        tbody.innerHTML = '';
+        
+        if (students.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-light);">No students found. Add students first.</td></tr>';
+            updateSummary();
+            return;
+        }
 
-            loadStudents();
+        students.forEach((s, i) => {
+            tbody.innerHTML += `
+            <tr>
+                <td>${i+1}</td>
+                <td>${s.studentId || s.id}</td>
+                <td><strong>${s.name}</strong></td>
+                <td>${s.departmentName || '—'}</td>
+                <td>
+                    <button class="att-status-btn att-present active" data-id="${s.id}" data-status="PRESENT" onclick="toggleAtt(this,'PRESENT')">✅ Present</button>
+                    <button class="att-status-btn att-absent" data-id="${s.id}" data-status="ABSENT" onclick="toggleAtt(this,'ABSENT')">❌ Absent</button>
+                </td>
+            </tr>`;
         });
-    </script>
+        updateSummary();
+    }
+
+    function toggleAtt(btn, status) {
+        const row = btn.closest('tr');
+        row.querySelectorAll('.att-status-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateSummary();
+    }
+
+    function updateSummary() {
+        const present = document.querySelectorAll('.att-present.active').length;
+        const absent  = document.querySelectorAll('.att-absent.active').length;
+        document.getElementById('attSummary').innerHTML = `
+            <span class="summary-pill" style="background:#dcfce7;color:#15803d;">✅ Present: ${present}</span>
+            <span class="summary-pill" style="background:#fee2e2;color:#dc2626;">❌ Absent: ${absent}</span>
+            <span class="summary-pill" style="background:rgba(99,102,241,0.1);color:var(--primary);">Total: ${present+absent}</span>
+        `;
+    }
+
+    document.getElementById('markAllPresent').onclick = () => {
+        document.querySelectorAll('.att-status-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.att-present').forEach(b => b.classList.add('active'));
+        updateSummary();
+    };
+    document.getElementById('markAllAbsent').onclick = () => {
+        document.querySelectorAll('.att-status-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.att-absent').forEach(b => b.classList.add('active'));
+        updateSummary();
+    };
+
+    document.getElementById('deptFilter').onchange = renderStudents;
+
+    document.getElementById('saveAttBtn').onclick = async () => {
+        const date    = document.getElementById('attDate').value;
+        const subjectId = document.getElementById('subjectSelect').value;
+        if (!date || !subjectId) { alert('Please select date and subject.'); return; }
+
+        const rows = document.querySelectorAll('#attList tr');
+        let savedCount = 0;
+
+        for (const row of rows) {
+            const presentBtn = row.querySelector('.att-present');
+            if (!presentBtn) continue;
+            
+            const studentId = presentBtn.getAttribute('data-id');
+            const status    = presentBtn.classList.contains('active') ? 'PRESENT' : 'ABSENT';
+            
+            const record = { studentId: parseInt(studentId), subjectId: parseInt(subjectId), date, status };
+
+            try {
+                const response = await fetch(`${API_BASE}/attendance/mark`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(record)
+                });
+                if (response.ok) savedCount++;
+            } catch (err) {
+                console.error('Error saving attendance record:', err);
+            }
+        }
+
+        alert('✅ Attendance saved successfully for ' + savedCount + ' students!');
+    };
+
+    document.getElementById('viewHistoryBtn').onclick = async () => {
+        try {
+            const response = await fetch(`${API_BASE}/attendance`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const all = await response.json();
+            if (all.length === 0) { alert('No attendance records yet.'); return; }
+            const recent = all.slice(0, 20);
+            const text = recent.map(a => `${a.date} | ${a.subjectName} | ${a.studentName} → ${a.status}`).join('\n');
+            alert('📅 Recent Attendance Records:\n\n' + text);
+        } catch (err) {
+            console.error('Error fetching attendance history:', err);
+        }
+    };
+
+    loadInitialData();
+</script>
 </body>
 </html>

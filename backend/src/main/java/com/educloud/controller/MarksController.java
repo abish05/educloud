@@ -27,6 +27,9 @@ public class MarksController {
     @Autowired
     private SubjectRepository subjectRepository;
 
+    @Autowired
+    private ActivityLogService activityLogService;
+
     @PostMapping
     public ResponseEntity<Marks> saveMarks(@RequestBody MarksDto dto) {
         Student student = studentRepository.findById(dto.getStudentId()).orElseThrow();
@@ -40,7 +43,28 @@ public class MarksController {
         marks.setSemesterMarks(dto.getSemesterMarks());
         marks.setGpa(dto.getGpa());
         
-        return ResponseEntity.ok(marksRepository.save(marks));
+        Marks saved = marksRepository.save(marks);
+        activityLogService.logActivity("Updated marks for " + student.getName() + " in " + subject.getName());
+        
+        return ResponseEntity.ok(saved);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MarksDto>> getAllMarks() {
+        return ResponseEntity.ok(marksRepository.findAllByOrderByIdDesc().stream()
+                .map(m -> {
+                    MarksDto d = new MarksDto();
+                    d.setId(m.getId());
+                    d.setStudentId(m.getStudent().getId());
+                    d.setStudentName(m.getStudent().getName());
+                    d.setSubjectId(m.getSubject().getId());
+                    d.setSubjectName(m.getSubject().getName());
+                    d.setSemester(m.getSemester());
+                    d.setInternalMarks(m.getInternalMarks());
+                    d.setSemesterMarks(m.getSemesterMarks());
+                    d.setGpa(m.getGpa());
+                    return d;
+                }).collect(java.util.stream.Collectors.toList()));
     }
 
     @GetMapping("/student/{studentId}")
