@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - EduCloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .settings-section { margin-bottom: 3rem; }
+        .settings-card { padding: 2rem; border-radius: 16px; margin-top: 1rem; }
+        .toggle-group { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--glass-border); }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar glass">
+            <h2 class="logo">EduCloud</h2>
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html" class="nav-item">Dashboard</a>
+                <a href="students.html" class="nav-item">Students</a>
+                <a href="faculty.html" class="nav-item">Faculty</a>
+                <a href="attendance.html" class="nav-item">Attendance</a>
+                <a href="marks.html" class="nav-item">Marks</a>
+                <a href="settings.html" class="nav-item active">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <h2>Settings</h2>
+                <div class="user-profile">
+                    <span id="userNameDisplay">Admin</span>
+                    <a href="#" id="logoutBtn" class="btn" style="margin-left: 1rem;">Logout</a>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>General Settings</h3>
+                <div class="settings-card glass">
+                    <div class="toggle-group">
+                        <div>
+                            <h4>Dark Mode</h4>
+                            <p style="color: var(--text-light); font-size: 0.9rem;">Enable dark theme across the application</p>
+                        </div>
+                        <button class="btn" id="themeToggle">Toggle</button>
+                    </div>
+                    <div class="toggle-group">
+                        <div>
+                            <h4>Email Notifications</h4>
+                            <p style="color: var(--text-light); font-size: 0.9rem;">Send automated alerts for attendance shortage</p>
+                        </div>
+                        <button class="btn btn-primary">Enabled</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Account Management</h3>
+                <div class="settings-card glass">
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label>Admin Name</label>
+                            <input type="text" value="System Admin" id="adminName">
+                        </div>
+                        <div class="form-group">
+                            <label>Change Password</label>
+                            <input type="password" placeholder="Enter new password">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('themeToggle').onclick = () => {
+            const current = document.body.getAttribute('data-theme');
+            document.body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        };
+    </script>
+</body>
+</html>
