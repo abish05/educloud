@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EduCloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar glass">
+            <h2 class="logo">EduCloud</h2>
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html" class="nav-item active">Dashboard</a>
+                <a href="#" class="nav-item">Students</a>
+                <a href="#" class="nav-item">Attendance</a>
+                <a href="#" class="nav-item">Marks</a>
+                <a href="#" class="nav-item">Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <h2>Overview</h2>
+                <div class="user-profile">
+                    <span id="userNameDisplay">Admin User</span>
+                    <a href="#" id="logoutBtn" class="btn btn-primary" style="margin-left: 1rem;">Logout</a>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card glass">
+                    <h3>Total Students</h3>
+                    <div class="stat-value" id="stat-students">1,245</div>
+                </div>
+                <div class="stat-card glass">
+                    <h3>Total Faculty</h3>
+                    <div class="stat-value" id="stat-faculty">42</div>
+                </div>
+                <div class="stat-card glass">
+                    <h3>Avg Attendance</h3>
+                    <div class="stat-value" id="stat-attendance">86%</div>
+                </div>
+                <div class="stat-card glass">
+                    <h3>Avg Marks</h3>
+                    <div class="stat-value" id="stat-marks">74.5</div>
+                </div>
+            </div>
+
+            <div style="background: var(--card-bg); padding: 2rem; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);">
+                <h3>Performance Analytics</h3>
+                <canvas id="performanceChart" height="100"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
